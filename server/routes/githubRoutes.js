@@ -890,7 +890,7 @@ router.get(
             new Date(),
         },
         {
-          new: true,
+          returnDocument: "after",
           upsert: true,
           runValidators: true,
         }
