@@ -43,13 +43,8 @@ router.get("/connect", protect, async (req, res) => {
 
     const params = new URLSearchParams({
       client_id: process.env.GITHUB_CLIENT_ID,
-
-      redirect_uri:
-        "process.env.GITHUB_CALLBACK_URL",
-
-      scope:
-        "read:user user:email",
-
+      redirect_uri: process.env.GITHUB_CALLBACK_URL,
+      scope: "read:user user:email",
       state,
     })
 
@@ -144,16 +139,10 @@ router.get("/callback", async (req, res) => {
         },
 
         body: JSON.stringify({
-          client_id:
-            process.env.GITHUB_CLIENT_ID,
-
-          client_secret:
-            process.env.GITHUB_CLIENT_SECRET,
-
+          client_id: process.env.GITHUB_CLIENT_ID,
+          client_secret: process.env.GITHUB_CLIENT_SECRET,
           code,
-
-          redirect_uri:
-            "process.env.GITHUB_CALLBACK_URL",
+          redirect_uri: process.env.GITHUB_CALLBACK_URL,
         }),
       }
     )
@@ -305,7 +294,7 @@ router.get("/callback", async (req, res) => {
     // ==================================================
 
     return res.redirect(
-      "http://localhost:5173/dashboard?github=connected"
+      `${process.env.FRONTEND_URL}/dashboard?github=connected`
     )
   } catch (error) {
     console.error(
@@ -409,9 +398,9 @@ router.get(
 
         if (
           tokenCheckResponse.status ===
-            403 ||
+          403 ||
           tokenCheckResponse.status ===
-            429
+          429
         ) {
           return res
             .status(
@@ -570,9 +559,9 @@ router.get(
                     const percentage =
                       totalBytes > 0
                         ? (
-                            bytes /
-                            totalBytes
-                          ) * 100
+                          bytes /
+                          totalBytes
+                        ) * 100
                         : 0
 
                     languagePercentages[
@@ -626,7 +615,7 @@ router.get(
                 console.error(
                   `Unable to analyze ${repo.name}:`,
                   error?.message ||
-                    error
+                  error
                 )
 
                 return {
@@ -679,7 +668,7 @@ router.get(
             (repo) =>
               Object.keys(
                 repo.languages ||
-                  {}
+                {}
               )
           )
         ),
@@ -699,7 +688,7 @@ router.get(
                     .hasOwnProperty
                     .call(
                       repo.languages ||
-                        {},
+                      {},
                       skill
                     )
               )
@@ -713,7 +702,7 @@ router.get(
                   total +
                   (
                     repo.languages[
-                      skill
+                    skill
                     ] || 0
                   ),
                 0
@@ -726,7 +715,7 @@ router.get(
             const projectEvidenceScore =
               Math.min(
                 matchingRepositories.length *
-                  25,
+                25,
                 50
               )
 
@@ -742,7 +731,7 @@ router.get(
             const evidenceScore =
               Math.round(
                 projectEvidenceScore +
-                  codeEvidenceScore
+                codeEvidenceScore
               )
 
             let evidenceLevel =
@@ -778,14 +767,14 @@ router.get(
 
                   bytes:
                     repo.languages[
-                      skill
+                    skill
                     ] || 0,
 
                   percentage:
                     repo
                       .languagePercentages?.[
-                        skill
-                      ] || 0,
+                    skill
+                    ] || 0,
                 })
               )
 
@@ -813,14 +802,14 @@ router.get(
       const projectScore =
         Math.min(
           analyzedRepositories.length *
-            10,
+          10,
           30
         )
 
       const skillScore =
         Math.min(
           detectedSkills.length *
-            10,
+          10,
           30
         )
 
@@ -830,14 +819,14 @@ router.get(
             repo.description &&
             Object.keys(
               repo.languages ||
-                {}
+              {}
             ).length > 0
         )
 
       const qualityScore =
         Math.min(
           qualityRepositories.length *
-            10,
+          10,
           20
         )
 
