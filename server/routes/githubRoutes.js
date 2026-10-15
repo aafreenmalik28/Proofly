@@ -61,8 +61,7 @@ router.get("/connect", protect, async (req, res) => {
     )
 
     return res.status(500).json({
-      message:
-        "Unable to start GitHub connection",
+      message: "Unable to start GitHub connection",
     })
   }
 })
@@ -82,8 +81,7 @@ router.get("/callback", async (req, res) => {
 
     if (!code || !state) {
       return res.status(400).json({
-        message:
-          "Invalid GitHub callback",
+        message: "Invalid GitHub callback",
       })
     }
 
@@ -91,8 +89,7 @@ router.get("/callback", async (req, res) => {
     // Validate OAuth state
     // --------------------------------------------------
 
-    const stateData =
-      oauthStates.get(state)
+    const stateData = oauthStates.get(state)
 
     if (!stateData) {
       return res.status(400).json({
@@ -108,8 +105,7 @@ router.get("/callback", async (req, res) => {
     // Check state expiration
     // --------------------------------------------------
 
-    const tenMinutes =
-      10 * 60 * 1000
+    const tenMinutes = 10 * 60 * 1000
 
     if (
       Date.now() - stateData.createdAt >
@@ -131,24 +127,22 @@ router.get("/callback", async (req, res) => {
         method: "POST",
 
         headers: {
-          Accept:
-            "application/json",
-
-          "Content-Type":
-            "application/json",
+          Accept: "application/json",
+          "Content-Type": "application/json",
         },
 
         body: JSON.stringify({
           client_id: process.env.GITHUB_CLIENT_ID,
-          client_secret: process.env.GITHUB_CLIENT_SECRET,
+          client_secret:
+            process.env.GITHUB_CLIENT_SECRET,
           code,
-          redirect_uri: process.env.GITHUB_CALLBACK_URL,
+          redirect_uri:
+            process.env.GITHUB_CALLBACK_URL,
         }),
       }
     )
 
-    const tokenData =
-      await tokenResponse.json()
+    const tokenData = await tokenResponse.json()
 
     if (
       !tokenResponse.ok ||
@@ -178,8 +172,7 @@ router.get("/callback", async (req, res) => {
       await fetch(
         "https://api.github.com/user",
         {
-          headers:
-            githubHeaders,
+          headers: githubHeaders,
         }
       )
 
@@ -214,6 +207,27 @@ router.get("/callback", async (req, res) => {
       return res.status(404).json({
         message:
           "Proofly user not found",
+      })
+    }
+
+    // ==================================================
+    // PREVENT DUPLICATE GITHUB CONNECTION
+    // ==================================================
+
+    const existingGitHubUser =
+      await User.findOne({
+        githubUsername: githubUser.login,
+        _id: { $ne: user._id },
+      })
+
+    if (existingGitHubUser) {
+      console.warn(
+        `GitHub @${githubUser.login} is already connected to another Proofly account`
+      )
+
+      return res.status(409).json({
+        message:
+          "This GitHub account is already connected to another Proofly account.",
       })
     }
 
@@ -344,8 +358,7 @@ router.get(
           message:
             "Please reconnect GitHub to continue",
 
-          reconnectRequired:
-            true,
+          reconnectRequired: true,
         })
       }
 
@@ -366,8 +379,7 @@ router.get(
         await fetch(
           "https://api.github.com/user",
           {
-            headers:
-              githubHeaders,
+            headers: githubHeaders,
           }
         )
 
@@ -384,23 +396,19 @@ router.get(
         )
 
         if (
-          tokenCheckResponse.status ===
-          401
+          tokenCheckResponse.status === 401
         ) {
           return res.status(401).json({
             message:
               "GitHub authorization expired. Please reconnect GitHub.",
 
-            reconnectRequired:
-              true,
+            reconnectRequired: true,
           })
         }
 
         if (
-          tokenCheckResponse.status ===
-          403 ||
-          tokenCheckResponse.status ===
-          429
+          tokenCheckResponse.status === 403 ||
+          tokenCheckResponse.status === 429
         ) {
           return res
             .status(
@@ -434,8 +442,7 @@ router.get(
             user.githubUsername
           )}/repos?sort=updated&per_page=100`,
           {
-            headers:
-              githubHeaders,
+            headers: githubHeaders,
           }
         )
 
@@ -458,8 +465,7 @@ router.get(
             message:
               "GitHub authorization expired. Please reconnect GitHub.",
 
-            reconnectRequired:
-              true,
+            reconnectRequired: true,
           })
         }
 
@@ -559,9 +565,9 @@ router.get(
                     const percentage =
                       totalBytes > 0
                         ? (
-                          bytes /
-                          totalBytes
-                        ) * 100
+                            bytes /
+                            totalBytes
+                          ) * 100
                         : 0
 
                     languagePercentages[
@@ -580,11 +586,9 @@ router.get(
                 // ------------------------------------------
 
                 return {
-                  id:
-                    repo.id,
+                  id: repo.id,
 
-                  name:
-                    repo.name,
+                  name: repo.name,
 
                   description:
                     repo.description ||
@@ -615,15 +619,13 @@ router.get(
                 console.error(
                   `Unable to analyze ${repo.name}:`,
                   error?.message ||
-                  error
+                    error
                 )
 
                 return {
-                  id:
-                    repo.id,
+                  id: repo.id,
 
-                  name:
-                    repo.name,
+                  name: repo.name,
 
                   description:
                     repo.description ||
@@ -635,14 +637,12 @@ router.get(
                   primaryLanguage:
                     repo.language,
 
-                  languages:
-                    {},
+                  languages: {},
 
                   languagePercentages:
                     {},
 
-                  totalBytes:
-                    0,
+                  totalBytes: 0,
 
                   stars:
                     repo.stargazers_count,
@@ -668,7 +668,7 @@ router.get(
             (repo) =>
               Object.keys(
                 repo.languages ||
-                {}
+                  {}
               )
           )
         ),
@@ -688,7 +688,7 @@ router.get(
                     .hasOwnProperty
                     .call(
                       repo.languages ||
-                      {},
+                        {},
                       skill
                     )
               )
@@ -702,7 +702,7 @@ router.get(
                   total +
                   (
                     repo.languages[
-                    skill
+                      skill
                     ] || 0
                   ),
                 0
@@ -715,7 +715,7 @@ router.get(
             const projectEvidenceScore =
               Math.min(
                 matchingRepositories.length *
-                25,
+                  25,
                 50
               )
 
@@ -731,7 +731,7 @@ router.get(
             const evidenceScore =
               Math.round(
                 projectEvidenceScore +
-                codeEvidenceScore
+                  codeEvidenceScore
               )
 
             let evidenceLevel =
@@ -756,25 +756,22 @@ router.get(
             const projects =
               matchingRepositories.map(
                 (repo) => ({
-                  id:
-                    repo.id,
+                  id: repo.id,
 
-                  name:
-                    repo.name,
+                  name: repo.name,
 
-                  url:
-                    repo.url,
+                  url: repo.url,
 
                   bytes:
                     repo.languages[
-                    skill
+                      skill
                     ] || 0,
 
                   percentage:
                     repo
                       .languagePercentages?.[
-                    skill
-                    ] || 0,
+                        skill
+                      ] || 0,
                 })
               )
 
@@ -802,14 +799,14 @@ router.get(
       const projectScore =
         Math.min(
           analyzedRepositories.length *
-          10,
+            10,
           30
         )
 
       const skillScore =
         Math.min(
           detectedSkills.length *
-          10,
+            10,
           30
         )
 
@@ -819,14 +816,14 @@ router.get(
             repo.description &&
             Object.keys(
               repo.languages ||
-              {}
+                {}
             ).length > 0
         )
 
       const qualityScore =
         Math.min(
           qualityRepositories.length *
-          10,
+            10,
           20
         )
 

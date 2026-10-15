@@ -26,6 +26,7 @@ const userSchema = new mongoose.Schema(
     githubUsername: {
       type: String,
       default: null,
+      trim: true,
     },
 
     // GitHub OAuth access token
@@ -42,9 +43,23 @@ const userSchema = new mongoose.Schema(
   }
 )
 
-const User = mongoose.model(
-  "User",
-  userSchema
+// One GitHub account can only be connected
+// to one Proofly user.
+//
+// Users without a GitHub connection are ignored
+// by this unique index.
+userSchema.index(
+  { githubUsername: 1 },
+  {
+    unique: true,
+    partialFilterExpression: {
+      githubUsername: {
+        $type: "string",
+      },
+    },
+  }
 )
+
+const User = mongoose.model("User", userSchema)
 
 module.exports = User

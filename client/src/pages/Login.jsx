@@ -49,7 +49,7 @@ function Login() {
       localStorage.setItem("token", data.token)
       localStorage.setItem("user", JSON.stringify(data.user))
 
-      setMessage("Login successful! ðŸŽ‰")
+      setMessage("Login successful!")
 
       // We'll create this page next
       setTimeout(() => {

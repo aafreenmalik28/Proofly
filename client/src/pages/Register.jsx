@@ -46,7 +46,7 @@ function Register() {
         return
       }
 
-      setMessage("Account created successfully! ðŸŽ‰")
+      setMessage("Account created successfully!")
 
       // Clear form after successful registration
       setFormData({
