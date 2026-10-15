@@ -225,10 +225,9 @@ router.get("/callback", async (req, res) => {
         `GitHub @${githubUser.login} is already connected to another Proofly account`
       )
 
-      return res.status(409).json({
-        message:
-          "This GitHub account is already connected to another Proofly account.",
-      })
+      return res.redirect(
+        `${process.env.FRONTEND_URL}/dashboard?github=already_connected`
+      )
     }
 
     // ==================================================
@@ -565,9 +564,9 @@ router.get(
                     const percentage =
                       totalBytes > 0
                         ? (
-                            bytes /
-                            totalBytes
-                          ) * 100
+                          bytes /
+                          totalBytes
+                        ) * 100
                         : 0
 
                     languagePercentages[
@@ -619,7 +618,7 @@ router.get(
                 console.error(
                   `Unable to analyze ${repo.name}:`,
                   error?.message ||
-                    error
+                  error
                 )
 
                 return {
@@ -668,7 +667,7 @@ router.get(
             (repo) =>
               Object.keys(
                 repo.languages ||
-                  {}
+                {}
               )
           )
         ),
@@ -688,7 +687,7 @@ router.get(
                     .hasOwnProperty
                     .call(
                       repo.languages ||
-                        {},
+                      {},
                       skill
                     )
               )
@@ -702,7 +701,7 @@ router.get(
                   total +
                   (
                     repo.languages[
-                      skill
+                    skill
                     ] || 0
                   ),
                 0
@@ -715,7 +714,7 @@ router.get(
             const projectEvidenceScore =
               Math.min(
                 matchingRepositories.length *
-                  25,
+                25,
                 50
               )
 
@@ -731,7 +730,7 @@ router.get(
             const evidenceScore =
               Math.round(
                 projectEvidenceScore +
-                  codeEvidenceScore
+                codeEvidenceScore
               )
 
             let evidenceLevel =
@@ -764,14 +763,14 @@ router.get(
 
                   bytes:
                     repo.languages[
-                      skill
+                    skill
                     ] || 0,
 
                   percentage:
                     repo
                       .languagePercentages?.[
-                        skill
-                      ] || 0,
+                    skill
+                    ] || 0,
                 })
               )
 
@@ -799,14 +798,14 @@ router.get(
       const projectScore =
         Math.min(
           analyzedRepositories.length *
-            10,
+          10,
           30
         )
 
       const skillScore =
         Math.min(
           detectedSkills.length *
-            10,
+          10,
           30
         )
 
@@ -816,14 +815,14 @@ router.get(
             repo.description &&
             Object.keys(
               repo.languages ||
-                {}
+              {}
             ).length > 0
         )
 
       const qualityScore =
         Math.min(
           qualityRepositories.length *
-            10,
+          10,
           20
         )
 

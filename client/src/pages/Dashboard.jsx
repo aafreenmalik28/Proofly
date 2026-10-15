@@ -35,6 +35,9 @@ function Dashboard() {
     const [githubReconnectRequired, setGitHubReconnectRequired] =
         useState(false)
 
+    const [githubConnectionMessage, setGitHubConnectionMessage] =
+        useState("")
+
     // NEW: tracks which repository share link was copied
     const [copiedRepoId, setCopiedRepoId] = useState(null)
 
@@ -87,6 +90,23 @@ function Dashboard() {
 
         fetchUser()
     }, [navigate])
+
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search)
+        const githubStatus = params.get("github")
+
+        if (githubStatus === "already_connected") {
+            setGitHubConnectionMessage(
+                "This GitHub account is already connected to another Proofly account."
+            )
+
+            window.history.replaceState(
+                {},
+                "",
+                window.location.pathname
+            )
+        }
+    }, [])
 
     // ======================================================
     // 2. FETCH + ANALYZE GITHUB REPOSITORIES
@@ -476,6 +496,33 @@ function Dashboard() {
                 <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
 
                     {/* WELCOME */}
+
+                    {githubConnectionMessage && (
+                        <div className="mb-6 rounded-xl border border-amber-500/30 bg-amber-500/10 px-5 py-4">
+                            <div className="flex items-start justify-between gap-4">
+                                <div>
+                                    <p className="font-semibold text-amber-300">
+                                        GitHub account already connected
+                                    </p>
+
+                                    <p className="mt-1 text-sm text-amber-200/80">
+                                        {githubConnectionMessage}
+                                    </p>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        setGitHubConnectionMessage("")
+                                    }
+                                    className="text-amber-300 transition hover:text-white"
+                                    aria-label="Dismiss message"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+                        </div>
+                    )}
 
                     <div>
                         <p className="text-sm text-slate-400">
